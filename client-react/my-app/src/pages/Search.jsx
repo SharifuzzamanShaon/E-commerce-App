@@ -1,9 +1,11 @@
+import axios from 'axios'
 import React, { useEffect, useState } from 'react'
-
+import { useNavigate } from 'react-router-dom'
 const Search = () => {
     const [listings, setListings] = useState([])
     const [loading, setLoading] = useState(null)
     const [showMore, setShowMore] = useState()
+    const navigate = useNavigate()
     const [sidebardata, setSidebardata] = useState({
         searchTerm: '',
         type: 'all',
@@ -42,19 +44,24 @@ const Search = () => {
                 order: orderFromUrl || 'desc',
             });
         }
-
         const fetchListings = async () => {
             setLoading(true);
             setShowMore(false);
             const searchQuery = urlParams.toString();
-            const res = await fetch(`/listing/get?${searchQuery}`);
-            const data = await res.json();
-            if (data.length > 8) {
+            console.log(searchQuery);
+            const config={
+                headers:{
+                    'Content-Type':"application/json"
+                }
+            }
+            const res = await axios.get(`/listing/get?${searchQuery}`,config);
+            console.log(res);
+            if (res.data.length > 8) {
                 setShowMore(true);
             } else {
                 setShowMore(false);
             }
-            setListings(data);
+            setListings(res.data);
             setLoading(false);
         };
 
@@ -85,10 +92,23 @@ const Search = () => {
                     e.target.checked || e.target.checked === 'true' ? true : false,
             });
         }
-        
+
     }
     console.log(sidebardata)
-    const handleSubmit = () => { }
+    const handleSubmit = (e) => {
+        e.preventDefault();
+        const urlParams = new URLSearchParams();
+        urlParams.set('searchTerm', sidebardata.searchTerm);
+        urlParams.set('type', sidebardata.type);
+        urlParams.set('parking', sidebardata.parking);
+        urlParams.set('furnished', sidebardata.furnished);
+        urlParams.set('offer', sidebardata.offer);
+        urlParams.set('sort', sidebardata.sort);
+        urlParams.set('order', sidebardata.order);
+        const searchQuery = urlParams.toString();
+        navigate(`/search?${searchQuery}`);
+    }
+    
     const onShowMoreClick = () => { }
     return (
         <div className='flex flex-col md:flex-row'>
@@ -206,11 +226,11 @@ const Search = () => {
                         </p>
                     )}
 
-                    {/* {!loading &&
+                    {!loading &&
                         listings &&
                         listings.map((listing) => (
                             <ListingItem key={listing._id} listing={listing} />
-                        ))} */}
+                        ))}
 
                     {showMore && (
                         <button
