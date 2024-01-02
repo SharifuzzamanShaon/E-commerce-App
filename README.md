@@ -1,5 +1,5 @@
 *** Greetings ***
-Title:  MERN Stack Complete e-commerce APP 
+#Title:  MERN Stack Complete e-commerce APP 
 Description: Here I wanted to apply all features like Full Athintication[token, auth0] Image uploading, data validation middleware, and many more
 
 ## Table of Contents   
