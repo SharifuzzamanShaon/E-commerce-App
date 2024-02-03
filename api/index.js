@@ -32,9 +32,9 @@ app.use((err, req, res, next) => {
     return res.status(statusCode).json({ success: false, statusCode, message: message })
 })
 
-const port = 4002
+const port = 5000
 app.listen(port, async () => {
-    console.log("server Running at http://localhost:4002");
+    console.log("server Running at http://localhost:5000");
     await connectDB();
     console.log("DB connected");
 })

@@ -3,7 +3,7 @@ import ReactDOM from 'react-dom/client'
 import App from './App.jsx'
 import './index.css'
 import axios from 'axios'
-axios.defaults.baseURL = "http://localhost:4002/api/v1/"
+axios.defaults.baseURL = "http://localhost:5000/api/v1/"
 
 import { persistor, store } from './redux/store.js'
 import { Provider } from 'react-redux'

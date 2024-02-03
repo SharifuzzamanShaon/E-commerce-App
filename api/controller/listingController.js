@@ -1,4 +1,6 @@
-const Listing = require("../model/listingModel")
+const Listing = require("../model/listingModel");
+const APIfeachure = require("../utils/APIfeachure");
+const { searchByKeywords, filter } = require('../utils/APIfeachure')
 const createListing = async (req, res, next) => {
     try {
         const newList = req.body
@@ -69,4 +71,54 @@ const getSearchedListing = async (req, res, next) => {
         next(error)
     }
 }
-module.exports = { createListing, getListing, getSearchedListing }
+const queryOnTest = async (req, res, next) => {
+    try {
+
+        // const excludeValue = ['sort', 'page', 'order', 'limit'];
+        // const objQuery = { ...req.query };
+        // excludeValue.forEach((e) => {
+        //     delete objQuery[e];
+        // })
+
+        // let bathrooms = req.query.bathrooms;
+        // bathrooms === undefined ? bathrooms = "" : bathrooms = { $eq: req.query.bathrooms }
+        // console.log(bathrooms)
+        // const result = await Listing.find({ name: { $regex: keyword, $options: 'i' }, bathrooms })
+        // console.log(req.query);
+        // let querStr = JSON.stringify(req.query)
+        // querStr = querStr.replace(/\b(gte|lte|gt|lt)\b/g, (match) => `$${match}`)
+        // const queryObj = JSON.parse(querStr);
+
+
+
+        // const result = await Listing.find(objQuery)
+        // .where('name').equals(req.query.name)
+        const keyword = req.query.keyword || '';
+
+        // let parking = req.query.parking;
+        // if (parking === undefined || parking === 'false') {
+        //     parking = { $in: [false, true] };
+        // }
+        // const result = await Listing.find({ name: { $regex: keyword, $options: 'i' }, parking })
+
+
+        // const removeKey = ['keyword', 'limit', 'skip', 'regularPrice'];
+        // const queryCpy = { ...req.query }
+        // removeKey.forEach((e) => {
+        //     return delete queryCpy[e]
+        // })
+        // console.log(queryCpy)
+        // if(queryCpy.parking=== undefined ||queryCpy.parking=== 'false' ){
+        //     console.log("tt");
+        // }
+
+        let result = new APIfeachure(Listing.find(), req.query).search().query().boolean()
+        result =  result.queryData
+        result =await result.sort(req.query.sort)
+        // const result = await Listing.find().sort(req.query.sort)
+        return res.status(200).send(result)
+    } catch (error) {
+        next(error)
+    }
+}
+module.exports = { createListing, getListing, getSearchedListing, queryOnTest }
