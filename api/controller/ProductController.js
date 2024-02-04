@@ -16,21 +16,13 @@ const addNewProduct = async (req, res) => {
 }
 
 const searcProduct = async (req, res) => {
-    const searchTerm = req.query.searchTerm
+    const searchTerm = req.query.searchTerm ? { name: { $regex: req.query.searchTerm, $options: 'i' } } : {}
+    const brand = req.query.brand ? { brand: { $in: req.query.brand } } : {}
 
-    console.log(req.query.brand)
-    let brand;
-    if (req.query.brand) {
-        console.log(req.query.brand);
-        brand = { $in: [req.query.brand] }
-        console.log(brand)
-    }
-    const searchedResult = await Product.find({
-        name: { $regex: searchTerm, $options: 'i' },
-       brand
+    const query = { $and: [searchTerm, brand] }
 
-    })
-    return res.status(200).send({ searchedResult });
+    const searchedResult = await Product.find(query)
+    return res.status(200).send(searchedResult);
 }
 
 module.exports = {
