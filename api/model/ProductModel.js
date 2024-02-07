@@ -17,8 +17,8 @@ const ProductSchema = new mongoose.Schema(
             required: true,
         },
         category: {
-            type: String,
-            ref: "Category",
+            type: Schema.Types.ObjectId,
+            ref: "Subcatagories",
             required: true,
         },
         sizes: {
@@ -71,6 +71,6 @@ const ProductSchema = new mongoose.Schema(
         toJSON: { virtuals: true },
     }
 );
-const Product = mongoose.model('Products', ProductSchema);
+const Product = mongoose.model('Product', ProductSchema);
 
 module.exports = Product

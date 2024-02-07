@@ -6,11 +6,13 @@ const accessProfile = require("./profileRouter")
 const listingRouter = require("./listingRouter")
 const { route } = require('../app')
 const productRouter = require('./ProductRouter')
+const categoryRouter = require("./CategoryRouter")
 const authMiddleware = require('../middleware/auth/authMiddleware')
 
 router.use("/user", userRouter)
 router.use("/profile", authMiddleware, accessProfile);
 router.use("/auth", authRouter)
 router.use("/products", productRouter)
+router.use("/product/category",categoryRouter)
 
 module.exports = router
