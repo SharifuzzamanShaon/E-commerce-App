@@ -16,7 +16,7 @@ const addCategory = async (req, res) => {
     return res.status(200).send({ message: "new category created", category });
 }
 
-const addSubCategory = async (req, res,next) => {
+const addSubCategory = async (req, res, next) => {
 
     const { name, parentCategory } = req.body
     try {
@@ -35,15 +35,76 @@ const addSubCategory = async (req, res,next) => {
             isParent2.subCatagories.push(newSubcategory._id);
             await isParent2.save()
         }
-        
+
         return res.status(200).send(newSubcategory)
     } catch (error) {
         next(error)
     }
 }
 
+// fetch the category tree.
+
+const categoryTree = async (req, res, next) => {
+
+    try {
+        const categories = await Category.find()
+        async function getCategoryRecursively(category) {
+            if (!category || !category.length) {
+                return [];
+            }
+
+            return await Promise.all(category.map(async (subcategory) => {
+                let subCat = await Subcatagories.findById({ _id: subcategory })
+                return {
+                    _id: subCat._id,
+                    name: subCat.name,
+                    subCatagories: subCat.subCatagories ? await getCategoryRecursively(subCat.subCatagories) : []
+                };
+            }
+            ))
+        }
+        const allCategories = await Promise.all(categories.map(async (category) => ({
+            _id: category._id,
+            name: category.name,
+            subCatagories: category.subCatagories ? await getCategoryRecursively(category.subCatagories) : []
+        })))
+
+        return res.status(200).send(allCategories)
+    } catch (error) {
+        next(error)
+    }
+}
+
+
 module.exports = {
     getCategory,
     addCategory,
-    addSubCategory
+    addSubCategory,
+    categoryTree
 }
+
+/**
+ * 
+        const cat1 = await Category.find()
+        const cat2 = await Subcatagories.find()
+        let categories = [...cat1, ...cat2]
+        const categoryTree = await Promise.all(categories.map(async (category) => ({
+            _id: category._id,
+            name: category.name,
+            parentCategory: category.parentCategory,
+            subCatagories: await Promise.all(category.subCatagories.map(async (subcategory) => {
+                let subCat = await Subcatagories.findById({ _id: subcategory._id })
+
+                return {
+                    _id: subcategory._id,
+                    name: subCat.name,
+                    parentCategory: subCat.parentCategory
+                }
+            }))
+        })));
+        console.log(categoryTree)
+        const categoryItem = categoryTree.find((item) => item._id == req.params.categoryId)
+        const resCategory = categoryItem ? categoryItem : categoryTree.filter((item) => !item.parentCategory)
+        console.log(categoryTree);
+        return res.status(200).send(resCategory)
+ */
