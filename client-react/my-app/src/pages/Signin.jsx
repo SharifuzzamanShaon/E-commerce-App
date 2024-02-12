@@ -33,7 +33,8 @@ const Signin = () => {
       console.log(res);
       if (res.status === 200) {
         dispatch(signInSuccess(res.data));
-        navigate("/");
+        console.log(res.data);
+        res.data.userInfo.role === 'admin' ? navigate("/admin-dashboard") : navigate("/");
       }
     } catch (error) {
       dispatch(signInFailure(error.response.data.message))

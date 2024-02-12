@@ -1,10 +1,10 @@
 import React, { useEffect, useRef, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { getStorage, ref, uploadBytesResumable } from 'firebase/storage'
 import { app } from '../../firebase'
 import axios from 'axios'
-import { userDeleteFailde, userDeleteStarted, userDeleteSuccess, userUpdateFaided, userUpdateSuccess } from '../redux/user/userSlice'
+import { userDeleteFailde, userDeleteStarted, userDeleteSuccess, userSignOut, userUpdateFaided, userUpdateSuccess } from '../redux/user/userSlice'
 const Profile = () => {
   const { currentUser, loading, error } = useSelector((state) => state.user)
   const [passwordType, setPasswordType] = useState("password");
@@ -20,6 +20,7 @@ const Profile = () => {
   const [updateSuccess, setUpdateSuccess] = useState(false);
   const [showListingsError, setShowListingsError] = useState(false);
   const [userListings, setUserListings] = useState([]);
+  const navigate = useNavigate()
   const dispatch = useDispatch();
   const handleListingDelete = () => { }
   const handleShowListings = () => { }
@@ -61,7 +62,10 @@ const Profile = () => {
       dispatch(userDeleteFailde(error))
     }
   }
-  const handleSignOut = () => { }
+  const handleSignOut = () => {
+    navigate('/');
+    dispatch(userSignOut())
+  }
   const fileRef = useRef(null)
   useEffect(() => {
     if (file) {

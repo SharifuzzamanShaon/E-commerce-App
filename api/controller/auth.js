@@ -30,7 +30,8 @@ const signIn = async (req, res, next) => {
         const payload = {
             id: user._id,
             username: user.username,
-            email: user.email
+            email: user.email,
+            role: user.role
         }
         console.log("payload", payload);
         const token = jwt.sign(payload, "privateKey", { expiresIn: "4h" });
@@ -65,7 +66,7 @@ const googleAuth = async (req, res, next) => {
                 username: userInfo.username,
                 email: userInfo.email
             }
-            const token =await jwt.sign(payload, "privateKey", { expiresIn: "4h" });
+            const token = await jwt.sign(payload, "privateKey", { expiresIn: "4h" });
             return res.status(201).send({ messgae: "Signup successfully", success: true, userInfo, token });
         }
     } catch (err) {

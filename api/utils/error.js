@@ -1,10 +1,19 @@
-function error(msg, statusCode){
+function error(msg, statusCode) {
     const e = new Error()
-    e.message=msg
+    e.message = msg
     e.status = statusCode;
     return e;
 }
-module.exports = error
+function authorizationError() {
+    const e = new Error()
+    e.message = "unauthorized accesss"
+    e.status = 401;
+    return e
+}
+
+module.exports = { error, authorizationError }
+
+
 
 /**
  * function error(msg = 'Something error occured', status = 500) {

@@ -4,7 +4,7 @@ const useRouter = require("./router/user");
 const { connectDB } = require("./DB/ConnectDB");
 const router = require("./router");
 const cors = require('cors');
-const authMiddleware = require("./middleware/auth/authMiddleware");
+const authMiddleware = require("./middleware/authenticate/authMiddleware");
 app.use(cors())
 
 app.use(cors({

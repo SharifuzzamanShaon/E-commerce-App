@@ -7,7 +7,7 @@ const listingRouter = require("./listingRouter")
 const { route } = require('../app')
 const productRouter = require('./ProductRouter')
 const categoryRouter = require("./CategoryRouter")
-const authMiddleware = require('../middleware/auth/authMiddleware')
+const authMiddleware = require('../middleware/authenticate/authMiddleware')
 
 router.use("/user", userRouter)
 router.use("/profile", authMiddleware, accessProfile);

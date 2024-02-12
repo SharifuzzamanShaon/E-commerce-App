@@ -42,10 +42,7 @@ const addSubCategory = async (req, res, next) => {
     }
 }
 
-// fetch the category tree.
-
 const categoryTree = async (req, res, next) => {
-
     try {
         const categories = await Category.find()
         async function getCategoryRecursively(category) {

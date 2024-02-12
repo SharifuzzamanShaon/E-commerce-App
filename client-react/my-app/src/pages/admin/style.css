@@ -1,0 +1,36 @@
+.admin-sidebar {
+    /* flex: 0.3; */
+    display: flex;
+    /* flex-direction: column; */
+    background-color: #a6c72f;
+
+}
+
+.order-page {
+    /* flex: 0.7; */
+    background-color: #4bfc8f;
+
+}
+
+.all-product {
+    flex: 1;
+    /* width: 100%; */
+    /* height: auto; */
+    margin: 48px 0 5px 0;
+    overflow: scroll;
+    padding-left: 10px;
+    padding-right: 10px;
+    background-color: #e7e7e7;
+
+}
+
+.main-container {
+    background-color: #6585e2;
+    height: 100vh;
+    /* width: 100%; */
+    display: flex;
+}
+
+.demo-loadmore-list {
+    min-height: 350px;
+}

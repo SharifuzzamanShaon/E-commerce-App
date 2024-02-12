@@ -3,10 +3,12 @@ const Product = require("../model/ProductModel")
 
 const getSingleProduct = async (req, res) => {
     const id = req.params.id;
-    const product = await Product.findById({ _id: id });
+    const product = await Product.findById({ _id: id })
     return res.status(200).send({ product })
 }
 const addNewProduct = async (req, res) => {
+    const user = req.user
+    console.log(user);
     const { name, description, brand, category,
         sizes, colors, price, totalQty, totalSold } = req.body
     const newProduct = new Product({

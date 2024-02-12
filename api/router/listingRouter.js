@@ -1,5 +1,5 @@
 const { createListing, getListing, getSearchedListing, queryOnTest } = require("../controller/listingController")
-const authMiddleware = require("../middleware/auth/authMiddleware")
+const authMiddleware = require("../middleware/authenticate/authMiddleware")
 
 const router = require("express").Router()
 
