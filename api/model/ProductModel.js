@@ -62,7 +62,7 @@ const ProductSchema = new mongoose.Schema(
         },
         totalSold: {
             type: Number,
-            required: true,
+            // required: true,
             default: 0,
         },
     },

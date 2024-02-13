@@ -4,7 +4,7 @@ exports.runValidation = (schema) => {
 
         if (error) {
             const errorList = error.details.map((itme) => itme.message)
-            return res.status(201).json({ message: "Invalid input", error: errorList })
+            return res.status(400).json({ message: "Invalid input", error: errorList })
         }
         next()
     }

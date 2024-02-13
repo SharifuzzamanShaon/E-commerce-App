@@ -6,21 +6,24 @@ const getSingleProduct = async (req, res) => {
     const product = await Product.findById({ _id: id })
     return res.status(200).send({ product })
 }
-const addNewProduct = async (req, res) => {
-    const user = req.user
-    console.log(user);
-    const { name, description, brand, category,
-        sizes, colors, price, totalQty, totalSold } = req.body
-    const newProduct = new Product({
-        name, description, brand, category,
-        sizes, colors, price, totalQty, totalSold
-    })
-    const newProductInfo = await newProduct.save()
-    // console.log(newProductInfo._id);
-    // let addProductToSubcategory = await Subcatagories.findById({ _id: category })
-    // addProductToSubcategory.products.push(newProductInfo._id)
-    // await addProductToSubcategory.save()
-    return res.status(201).send({ messgae: "added successfully", newProductInfo });
+const addNewProduct = async (req, res, next) => {
+    try {
+        
+        const { name, description, brand, category,
+            sizes, colors, price, totalQty, totalSold } = req.body
+        const newProduct = new Product({
+            name, description, brand, category,
+            sizes, colors, price, totalQty, totalSold
+        })
+        const newProductInfo = await newProduct.save()
+        // console.log(newProductInfo._id);
+        // let addProductToSubcategory = await Subcatagories.findById({ _id: category })
+        // addProductToSubcategory.products.push(newProductInfo._id)
+        // await addProductToSubcategory.save()
+        return res.status(201).send({ messgae: "added successfully", newProductInfo });
+    } catch (error) {
+        next(error)
+    }
 }
 
 const searcProduct = async (req, res) => {
@@ -69,7 +72,7 @@ const patchProduct = async (req, res) => {
 
     const updateProduct = await product.save();
 
-    return res.status(201).send({ message: 'update success', updateProduct })
+    return res.status(200).send({ message: 'update success', updateProduct })
 
 }
 
