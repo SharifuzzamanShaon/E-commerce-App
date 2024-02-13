@@ -61,14 +61,14 @@ const Allproduct = () => {
       key: 'action',
       render: (item) => (
         <Space size="middle">
-          <a onClick={()=>goToEdit(item)}>Edit</a>
+          <a onClick={() => goToEdit(item)}>Edit</a>
           <a>Delete</a>
         </Space>
       ),
     },
   ];
   const goToEdit = (item) => {
-    navigate('edit-product');
+    navigate('edit-product',{state:item});
     console.log(item)
 
   }

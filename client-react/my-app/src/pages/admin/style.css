@@ -23,14 +23,26 @@
     background-color: #e7e7e7;
 
 }
+.edit-product{
+    margin: 48px 0 5px 0;
+    padding-left: 10px;
+    padding-right: 10px;
+    background-color: #e7e7e7;
+}
 
 .main-container {
     background-color: #6585e2;
-    height: 100vh;
+    /* height: 100vh; */
     /* width: 100%; */
     display: flex;
 }
-
+.admin-dashboard{
+    display: flex;
+}
 .demo-loadmore-list {
     min-height: 350px;
+}
+
+.ant-select.ant-select-outlined.css-dev-only-do-not-override-1rqnfsa.ant-select-multiple.ant-select-allow-clear.ant-select-show-arrow.ant-select-show-search {
+    width: 131px!important;
 }
