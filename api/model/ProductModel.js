@@ -52,16 +52,16 @@ const ProductSchema = new mongoose.Schema(
         ],
 
         price: {
-            type: Number,
+            type: String,
             required: true,
         },
 
         totalQty: {
-            type: Number,
+            type: String,
             required: true,
         },
         totalSold: {
-            type: Number,
+            type: String,
             // required: true,
             default: 0,
         },
