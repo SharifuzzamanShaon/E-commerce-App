@@ -8,7 +8,7 @@ const getSingleProduct = async (req, res) => {
 }
 const addNewProduct = async (req, res, next) => {
     try {
-        
+
         const { name, description, brand, category,
             sizes, colors, price, totalQty, totalSold } = req.body
         const newProduct = new Product({
@@ -40,9 +40,9 @@ const searcProduct = async (req, res) => {
     const limit = req.query.limit || 2
     const page = req.query.page || 1
     const skip = limit * (page - 1)
-    console.log(skip)
-    const searchedResult = await Product.find(query).limit(limit).skip(skip).sort({ createdAt: -1 })
-    return res.status(200).send(searchedResult);
+    const searchedResult = await Product.find(query).limit(limit).skip(skip)
+    const totalCount = await Product.countDocuments()
+    return res.status(200).send({ products: searchedResult, totalCount });
 }
 
 const patchProduct = async (req, res) => {

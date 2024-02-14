@@ -3,10 +3,11 @@ import TextArea from 'antd/es/input/TextArea'
 import axios from 'axios';
 import React, { useEffect, useState } from 'react'
 import { useSelector } from 'react-redux';
+const productOption={ name: '', price: 0, brand: "", totalQty: 0, totalSold: 0, sizes: [], colors: ["black"], category: '', description: "" }
 const AddNewProduct = () => {
     const [messageApi, contextHolder] = message.useMessage();
     const [treeData, setTreeData] = useState([])
-    const [newProduct, setNewProduct] = useState({ name: '', price: 10, brand: "", totalQty: 10, totalSold: 20, sizes: [], colors: ["black"], category: '', description: "" });
+    const [newProduct, setNewProduct] = useState({...productOption});
     const { currentUser } = useSelector((state) => state.user)
 
     const handleChange = (e) => {
@@ -41,7 +42,7 @@ const AddNewProduct = () => {
             const res = await axios.post(`/products/add-product`, newProduct, config);
             if (res.status === 201) {
                 success();
-                setNewProduct("")
+                setNewProduct({...productOption})
             } else {
                 error('Faild to add the product')
             }
@@ -98,7 +99,7 @@ const AddNewProduct = () => {
                 <Input placeholder="Type here" type='number' name='price' prefix={"Price | "} value={newProduct.price} onChange={handleChange} />
                 <Input placeholder="Type here" type='text' name='brand' prefix={"Brand Name | "} value={newProduct.brand} onChange={handleChange} />
                 <Input placeholder="Type here" type='number' name='totalQty' prefix={"Totoal Quantity | "} value={newProduct.totalQty} onChange={handleChange} />
-                <Space style={{ width: '100%', }} direction="vartical">
+                {/* <Space style={{ width: '100%', }} direction="vartical"> */}
                     <Select mode="multiple" allowClear style={{ width: '100%' }} placeholder=" select Size" defaultValue={[]} onChange={handleSelectSize} options={options} />
                     <TreeSelect
                         showSearch
@@ -110,13 +111,13 @@ const AddNewProduct = () => {
                             maxHeight: 400,
                             overflow: 'auto',
                         }}
-                        placeholder="Select category"
+                        placeholder="Please select"
                         allowClear
                         treeDefaultExpandAll
                         onChange={onChange}
                         treeData={treeData.length > 0 ? treeData : []}
                     />
-                </Space>
+                {/* </Space> */}
 
                 <TextArea rows={4} placeholder="Type here" type='text' name='description' prefix={"Description | "} value={newProduct.description} onChange={handleChange} />
                 <Button block onClick={handleSubmit}>Add Product</Button>

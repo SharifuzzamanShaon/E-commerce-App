@@ -11,20 +11,24 @@ import { Card, Spin } from 'antd';
 const { Meta } = Card;
 import { Breadcrumb, Layout, Menu, theme } from 'antd';
 import { useNavigate } from 'react-router-dom';
+import Pagination from '../components/Pagination';
+import ShopPageController from '../components/ShopPageController';
 const { Header, Content, Footer, Sider } = Layout;
 
 function App() {
     const [categories, setCategories] = useState([])
     const [products, setProducts] = useState([])
-    const [searchTerm, setSearchTerm] = useState('t-shirt');
+    const [searchTerm, setSearchTerm] = useState('');
+    const [totalCount, setTotalCount] = useState(0)
     const [page, setPage] = useState(1);
-    const [limit, setLimit] = useState(5);
+    const [limit, setLimit] = useState(4);
     const navigate = useNavigate();
     useEffect(() => {
-
         fetchCategories();
+    }, [])
+    useEffect(() => {
         fetchProducts()
-    }, []);
+    }, [page, limit]);
 
     async function fetchCategories() {
         try {
@@ -51,7 +55,8 @@ function App() {
         try {
             const res = await axios.get(`/products/search/query?searchTerm=${searchTerm}&limit=${limit}&page=${page}`);
             if (res.data) {
-                setProducts(res.data);
+                setProducts(res.data.products);
+                setTotalCount(res.data.totalCount)
                 console.log(products);
             }
         } catch (error) {
@@ -63,7 +68,6 @@ function App() {
         ...categories
     ]
 
-    console.log(categories)
     const [collapsed, setCollapsed] = useState(false);
     const {
         token: { colorBgContainer, borderRadiusLG },
@@ -97,14 +101,7 @@ function App() {
                             margin: '0 16px',
                         }}
                     >
-                        <Breadcrumb
-                            style={{
-                                margin: '16px 0',
-                            }}
-                        >
-                            <Breadcrumb.Item>User</Breadcrumb.Item>
-                            <Breadcrumb.Item>Bill</Breadcrumb.Item>
-                        </Breadcrumb>
+                        <ShopPageController limit={limit} setLimit={setLimit} />
                         <div
                             style={{
                                 padding: 24,
@@ -118,7 +115,7 @@ function App() {
                                     {
                                         products && products.length > 0 ?
                                             products.map((item) => {
-                                                return (<Card onClick={()=>goToSinglePage(item._id)} hoverable style={{ width: 240, }}
+                                                return (<Card onClick={() => goToSinglePage(item._id)} hoverable style={{ width: 240, }}
                                                     cover={<img alt="example" src="https://os.alipayobjects.com/rmsportal/QBnOOoLaAfKPirc.png" />}
                                                 >
                                                     <Meta title={`${item.name}`} />
@@ -130,7 +127,9 @@ function App() {
                                     }
                                 </div>
                             </div>
+                            <Pagination totalCount={totalCount} setPage={setPage} page={page} limit={limit}></Pagination>
                         </div>
+
                     </Content>
                     <Footer
                         style={{
