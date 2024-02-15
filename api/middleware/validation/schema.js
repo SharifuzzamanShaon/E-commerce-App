@@ -20,8 +20,8 @@ exports.schemas = {
             .min(5)
             .max(30)
             .required(),
-        price: Joi.number()
-            .min(5)
+        price: Joi.string()
+            .min(1)
             .max(2000),
         category: Joi.string()
             .required(),
@@ -33,15 +33,13 @@ exports.schemas = {
                 Joi.string()
             )
             .required(),
-        totalQty: Joi.number()
-            .required(),
         colors: Joi.array()
             .items(
                 Joi.string()
             )
             .required(),
         brand: Joi.string(),
-        totalQty: Joi.number(),
-        totalSold: Joi.number()
+        totalQty: Joi.string(),
+       // totalSold: Joi.string()
     })
 }

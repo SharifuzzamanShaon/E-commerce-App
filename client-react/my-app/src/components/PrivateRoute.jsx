@@ -17,7 +17,8 @@ const PrivateRoute = () => {
     const checkVaildToken = async () => {
         try {
             const res = await axios.get("/profile", config)
-            if (200 === 200) {
+            console.log(res)
+            if (res.status === 200) {
                 setValidUser(true)
             }
             else {

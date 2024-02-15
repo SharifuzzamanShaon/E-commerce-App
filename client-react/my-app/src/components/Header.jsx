@@ -1,23 +1,54 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { FaSearch } from 'react-icons/fa';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
+import axios from 'axios';
+import { addSearchKeyword } from '../redux/product/productSlice';
 
 const Header = () => {
     const [searchTerm, setSearchTerm] = useState("")
+    const [keyword, setKeyword] = useState("")
     const { currentUser } = useSelector((state) => state.user)
     const navigate = useNavigate()
-    const handleSubmit = (e) => {
-        e.preventDefault();
-        const urlParams = new URLSearchParams(window.location.search)
-        urlParams.set('searchTerm', searchTerm);
-        const searchQuery = urlParams.toString();
-        console.log(searchQuery);
-        navigate(`/search/${searchQuery}`)
-    }
+    const dispatch = useDispatch()
+    useEffect(() => {
+        dispatch(addSearchKeyword(keyword))
+    }, [keyword])
+    // const handleSubmit = (e) => {
+    //     e.preventDefault();
+    //     const urlParams = new URLSearchParams(window.location.search)
+    //     urlParams.set('searchTerm', searchTerm);
+    //     const searchQuery = urlParams.toString();
+    //     console.log(searchQuery);
+    //     navigate(`/search/${searchQuery}`)
+    // }
+    // useEffect(() => {
+    //     let timerOut = setTimeout(() => {
+    //         searchProduct()
+    //     }, 2000)
+    //     return () => clearTimeout(timerOut)
+
+    // }, [searchTerm])
+    // // debounce
+    // // let timerOut = null;
+    // // const handleSearchTerm = () => {
+    // //     if (timerOut) {
+    // //         clearTimeout(timerOut);
+    // //     }
+    // //     timerOut = setTimeout(() => {
+    // //         searchProduct()
+    // //     }, 2000)
+
+    // // }
+    // const searchProduct = async () => {
+    //     const res = await axios.get(`/products/search/query?searchTerm=${searchTerm}`)
+    //     console.log(res.data);
+
+    // }
+
 
     return (
-        <header className='bg-slate-200 shadow-md'>
+        <header className='bg-[#002140] shadow-md'>
             <div className='flex justify-between items-center max-w-6xl mx-auto p-3'>
                 <Link to='/'>
                     <h1 className='font-bold text-sm sm:text-xl flex flex-wrap'>
@@ -26,15 +57,16 @@ const Header = () => {
                     </h1>
                 </Link>
                 {
+
                     currentUser &&
-                        currentUser.userInfo.role === 'admin' ? <h3>Admin Dashboard</h3> :
-                        <form onSubmit={handleSubmit} className='bg-slate-100 p-3 rounded-lg flex items-center'>
+                        currentUser.userInfo.role === 'admin' ? <h3 className='text-slate-500 font-bold text-sm sm:text-xl flex flex-wrap'>Admin</h3> :
+                        <form  className='bg-slate-100 p-3 rounded-lg flex items-center'>
                             <input
                                 type='text'
                                 placeholder='Search...'
                                 className='bg-transparent focus:outline-none w-24 sm:w-64'
-                                value={searchTerm}
-                                onChange={(e) => setSearchTerm(e.target.value)}
+                                value={keyword}
+                                onChange={(e) => setKeyword(e.target.value)}
                             />
                             <button>
                                 <FaSearch className='text-slate-600' />
@@ -43,28 +75,28 @@ const Header = () => {
                 }
                 <ul className='flex gap-4'>
                     <Link to='/'>
-                        <li className='hidden sm:inline text-slate-700 hover:underline'>
+                        <li className='text-white font-semibold cursor-pointer hover:bg-cyan-600'>
                             Home
                         </li>
                     </Link>
                     {currentUser &&
                         currentUser.userInfo.role === 'admin' ? <Link to='app'>
-                        <li className='hidden sm:inline text-slate-700 hover:underline'>
-                            Admin Dashboard
+                        <li className='text-white font-semibold cursor-pointer hover:bg-cyan-600'>
+                             Dashboard
                         </li>
                     </Link> :
-                        <div>
+                        <>
                             <Link to='/shop'>
-                                <li className='hidden sm:inline text-slate-700 hover:underline'>
+                                <li className='text-white font-semibold cursor-pointer hover:bg-cyan-600'>
                                     Shop
                                 </li>
                             </Link>
                             <Link to='/about'>
-                                <li className='hidden sm:inline text-slate-700 hover:underline'>
+                                <li className='text-white font-semibold cursor-pointer hover:bg-cyan-600'>
                                     About
                                 </li>
                             </Link>
-                        </div>}
+                        </>}
                     <Link to={currentUser ? "/profile" : "/sign-in"}>
                         {currentUser ? (
                             <img
@@ -73,7 +105,7 @@ const Header = () => {
                                 alt='profile'
                             />
                         ) : (
-                            <li className=' text-slate-700 hover:underline'> Sign in</li>
+                            <li className='text-white font-semibold cursor-pointer hover:bg-cyan-600 '> Sign in</li>
                         )}
                     </Link>
                 </ul>

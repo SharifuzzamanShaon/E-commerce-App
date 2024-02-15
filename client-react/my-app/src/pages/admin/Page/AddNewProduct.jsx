@@ -3,7 +3,7 @@ import TextArea from 'antd/es/input/TextArea'
 import axios from 'axios';
 import React, { useEffect, useState } from 'react'
 import { useSelector } from 'react-redux';
-const productOption={ name: '', price: 0, brand: "", totalQty: 0, totalSold: 0, sizes: [], colors: ["black"], category: '', description: "" }
+const productOption={ name: '', price: "", brand: "", totalQty: "", sizes: [], colors: ["black"], category: '', description: "" }
 const AddNewProduct = () => {
     const [messageApi, contextHolder] = message.useMessage();
     const [treeData, setTreeData] = useState([])
@@ -40,15 +40,16 @@ const AddNewProduct = () => {
                 }
               };
             const res = await axios.post(`/products/add-product`, newProduct, config);
+            console.log(res);
             if (res.status === 201) {
                 success();
-                setNewProduct({...productOption})
+                setNewProduct({...productOption, sizes: []})
             } else {
-                error('Faild to add the product')
+                showError(res.response.data.error[0])
             }
 
         } catch (error) {
-            showError()
+            showError(error.response.data.error[0])
             console.log(error)
         }
         console.log(newProduct);

@@ -33,15 +33,19 @@ const searcProduct = async (req, res) => {
     const minPrice = req.query.minprice || 0
     const maxPrice = req.query.maxprice || 10000
 
+
+
     const price = { price: { $gte: minPrice, $lte: maxPrice } }
 
-    const query = { $and: [searchTerm, brand, price] }
+    const keyword = { $and: [searchTerm, brand] }
 
-    const limit = req.query.limit || 2
+    const limit = req.query.limit || 8
     const page = req.query.page || 1
     const skip = limit * (page - 1)
-    const searchedResult = await Product.find(query).limit(limit).skip(skip)
+    const searchedResult = await Product.find(keyword).limit(limit).skip(skip)
+    // const searchedResult = await Product.find()
     const totalCount = await Product.countDocuments()
+    console.log(searchedResult)
     return res.status(200).send({ products: searchedResult, totalCount });
 }
 

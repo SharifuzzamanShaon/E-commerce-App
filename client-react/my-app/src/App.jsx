@@ -18,6 +18,7 @@ import ProductPage from './pages/admin/Page/Allproduct'
 import EditProduct from './pages/admin/Page/EditProduct'
 import AddNewProduct from './pages/admin/Page/AddNewProduct'
 import SingleProduct from './pages/SingleProduct'
+import Shop2 from './pages/Shop2'
 const App = () => {
 
   return (
@@ -30,6 +31,7 @@ const App = () => {
         <Route path="/about" element={<About />}>About</Route>
         <Route path="/search" element={<Search />}> </Route>
         <Route path="/shop" element={<Shop />}> </Route>
+        {/* <Route path="/shop2" element={<Shop2/>}> </Route> */}
         <Route path="/shop/:id" element={<SingleProduct />}></Route>
         {/* <Route element={<AdminPrivateRoute />}> */}
         <Route path="app" element={<MainContainer />}>

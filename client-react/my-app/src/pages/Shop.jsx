@@ -13,6 +13,8 @@ import { Breadcrumb, Layout, Menu, theme } from 'antd';
 import { useNavigate } from 'react-router-dom';
 import Pagination from '../components/Pagination';
 import ShopPageController from '../components/ShopPageController';
+import ShopPageMenu from '../components/ShopPageMenu';
+import { useSelector } from 'react-redux';
 const { Header, Content, Footer, Sider } = Layout;
 
 function App() {
@@ -23,37 +25,38 @@ function App() {
     const [page, setPage] = useState(1);
     const [limit, setLimit] = useState(4);
     const navigate = useNavigate();
+    const { searchKeyword } = useSelector((state) => state.product)
+
+    useEffect(() => { console.log(searchKeyword) }, [searchKeyword])
     useEffect(() => {
         fetchCategories();
     }, [])
+
     useEffect(() => {
         fetchProducts()
     }, [page, limit]);
 
+    useEffect(() => {
+        let timeOut = setTimeout(() => {
+            fetchProducts()
+        }, 2000)
+        return () => clearTimeout(timeOut);
+    }, [searchKeyword])
     async function fetchCategories() {
         try {
             const res = await axios.get(`/product/category/all/category`);
+
             if (res.data) {
-                async function getCategory(arr) {
-                    return Promise.all(arr.map(async (item) => {
-                        const { _id: id, name: label } = item;
-                        let children = [];
-                        if (item.subCatagories && item.subCatagories.length > 0) {
-                            children = await getCategory(item.subCatagories);
-                        }
-                        return { id, label, children }
-                    }))
-                }
-                const categories = await getCategory(res.data.length > 0 ? res.data : [])
-                setCategories(categories)
+                setCategories(res.data)
             }
         } catch (error) {
             console.log(error);
         }
     }
+
     async function fetchProducts() {
         try {
-            const res = await axios.get(`/products/search/query?searchTerm=${searchTerm}&limit=${limit}&page=${page}`);
+            const res = await axios.get(`/products/search/query?searchTerm=${searchKeyword}&limit=${limit}&page=${page}`);
             if (res.data) {
                 setProducts(res.data.products);
                 setTotalCount(res.data.totalCount)
@@ -64,9 +67,6 @@ function App() {
         }
     }
 
-    const items = [
-        ...categories
-    ]
 
     const [collapsed, setCollapsed] = useState(false);
     const {
@@ -77,9 +77,15 @@ function App() {
     const goToSinglePage = (id) => {
         navigate(`/shop/${id}`)
     }
+    const handleCategoryItem = (e) => {
+        console.log(e.target);
+    }
+
+
     return (
 
         <div>
+
             <Layout
                 style={{
                     minHeight: '100vh',
@@ -87,7 +93,13 @@ function App() {
             >
                 <Sider collapsible collapsed={collapsed} onCollapse={(value) => setCollapsed(value)}>
                     <div className="demo-logo-vertical" />
-                    <Menu theme="dark" defaultSelectedKeys={['1']} mode="inline" items={items} />
+                    <div className='px-5 w-35'>
+                        {
+                            categories.length > 0 &&
+                            <ShopPageMenu categories={categories} setProducts={setProducts}></ShopPageMenu>
+                        }
+                    </div>
+
                 </Sider>
                 <Layout>
                     <Header
@@ -98,7 +110,7 @@ function App() {
                     />
                     <Content
                         style={{
-                            margin: '0 16px',
+                            margin: '0 10px',
                         }}
                     >
                         <ShopPageController limit={limit} setLimit={setLimit} />
@@ -110,12 +122,12 @@ function App() {
                                 borderRadius: borderRadiusLG,
                             }}
                         >
-                            <div className='container mx-auto px-4 py-8'>
+                            <div className='container mx-auto px-4 py-4'>
                                 <div className='grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6'>
                                     {
                                         products && products.length > 0 ?
-                                            products.map((item) => {
-                                                return (<Card onClick={() => goToSinglePage(item._id)} hoverable style={{ width: 240, }}
+                                            products.map((item, index) => {
+                                                return (<Card key={index} onClick={() => goToSinglePage(item._id)} hoverable style={{ width: 240, }}
                                                     cover={<img alt="example" src="https://os.alipayobjects.com/rmsportal/QBnOOoLaAfKPirc.png" />}
                                                 >
                                                     <Meta title={`${item.name}`} />
@@ -129,7 +141,6 @@ function App() {
                             </div>
                             <Pagination totalCount={totalCount} setPage={setPage} page={page} limit={limit}></Pagination>
                         </div>
-
                     </Content>
                     <Footer
                         style={{

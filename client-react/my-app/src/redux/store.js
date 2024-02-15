@@ -3,9 +3,10 @@ import useReducer from './user/userSlice'
 import { persistReducer, persistStore } from 'redux-persist';
 import storage from 'redux-persist/lib/storage';
 import createMigrate from 'redux-persist/es/createMigrate';
+import productSlice from './product/productSlice';
 
 
-const rootReducer = combineReducers({ user: useReducer })
+const rootReducer = combineReducers({ user: useReducer, product: productSlice})
 
 const migrations = {
     0: (state) => {
@@ -24,7 +25,7 @@ const migrations = {
 const persistConfig = {
     key: 'root',
     storage,
-    // blacklist: [],
+    blacklist: ['product'],
     version:1,
     migrate: createMigrate(migrations, { debug: true }),
 }
