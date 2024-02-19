@@ -4,9 +4,10 @@ import { persistReducer, persistStore } from 'redux-persist';
 import storage from 'redux-persist/lib/storage';
 import createMigrate from 'redux-persist/es/createMigrate';
 import productSlice from './product/productSlice';
+import orderSlice from './product/orderSlice';
 
 
-const rootReducer = combineReducers({ user: useReducer, product: productSlice})
+const rootReducer = combineReducers({ user: useReducer, product: productSlice, neworders:orderSlice})
 
 const migrations = {
     0: (state) => {

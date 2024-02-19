@@ -19,6 +19,7 @@ import EditProduct from './pages/admin/Page/EditProduct'
 import AddNewProduct from './pages/admin/Page/AddNewProduct'
 import SingleProduct from './pages/SingleProduct'
 import Shop2 from './pages/Shop2'
+import CartPage from './pages/CartPage'
 const App = () => {
 
   return (

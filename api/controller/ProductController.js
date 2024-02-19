@@ -45,7 +45,6 @@ const searcProduct = async (req, res) => {
     const searchedResult = await Product.find(keyword).limit(limit).skip(skip)
     // const searchedResult = await Product.find()
     const totalCount = await Product.countDocuments()
-    console.log(searchedResult)
     return res.status(200).send({ products: searchedResult, totalCount });
 }
 

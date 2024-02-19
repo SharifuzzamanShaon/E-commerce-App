@@ -4,11 +4,15 @@ import { FaSearch } from 'react-icons/fa';
 import { useDispatch, useSelector } from 'react-redux';
 import axios from 'axios';
 import { addSearchKeyword } from '../redux/product/productSlice';
-
+import { BsCart4 } from "react-icons/bs";
+import Badge from '@mui/material/Badge';
+import { handleCart } from '../redux/product/orderSlice';
+import CartPage from '../pages/CartPage';
 const Header = () => {
     const [searchTerm, setSearchTerm] = useState("")
     const [keyword, setKeyword] = useState("")
     const { currentUser } = useSelector((state) => state.user)
+    const { orders } = useSelector((state) => state.neworders)
     const navigate = useNavigate()
     const dispatch = useDispatch()
     useEffect(() => {
@@ -45,8 +49,9 @@ const Header = () => {
     //     console.log(res.data);
 
     // }
-
-
+    const handleCartSidebar = () => {
+        dispatch(handleCart())
+    }
     return (
         <header className='bg-[#002140] shadow-md'>
             <div className='flex justify-between items-center max-w-6xl mx-auto p-3'>
@@ -60,7 +65,7 @@ const Header = () => {
 
                     currentUser &&
                         currentUser.userInfo.role === 'admin' ? <h3 className='text-slate-500 font-bold text-sm sm:text-xl flex flex-wrap'>Admin</h3> :
-                        <form  className='bg-slate-100 p-3 rounded-lg flex items-center'>
+                        <form className='bg-slate-100 p-3 rounded-lg flex items-center'>
                             <input
                                 type='text'
                                 placeholder='Search...'
@@ -82,7 +87,7 @@ const Header = () => {
                     {currentUser &&
                         currentUser.userInfo.role === 'admin' ? <Link to='app'>
                         <li className='text-white font-semibold cursor-pointer hover:bg-cyan-600'>
-                             Dashboard
+                            Dashboard
                         </li>
                     </Link> :
                         <>
@@ -94,6 +99,15 @@ const Header = () => {
                             <Link to='/about'>
                                 <li className='text-white font-semibold cursor-pointer hover:bg-cyan-600'>
                                     About
+                                </li>
+                            </Link>
+                            <Link >
+
+                                <li className='text-white text-xl font-bold cursor-pointer hover:bg-cyan-600'>
+                                    <Badge badgeContent={orders && orders.length} color="primary">
+                                        <BsCart4 onClick={handleCartSidebar} />
+                                    </Badge>
+
                                 </li>
                             </Link>
                         </>}
@@ -110,6 +124,8 @@ const Header = () => {
                     </Link>
                 </ul>
             </div>
+            <CartPage></CartPage>
+
         </header>
     )
 }
