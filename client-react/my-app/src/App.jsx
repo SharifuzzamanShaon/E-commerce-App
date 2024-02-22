@@ -20,6 +20,7 @@ import AddNewProduct from './pages/admin/Page/AddNewProduct'
 import SingleProduct from './pages/SingleProduct'
 import Shop2 from './pages/Shop2'
 import CartPage from './pages/CartPage'
+import CheckoutPage from './pages/CheckoutPage'
 const App = () => {
 
   return (
@@ -34,7 +35,7 @@ const App = () => {
         <Route path="/shop" element={<Shop />}> </Route>
         {/* <Route path="/shop2" element={<Shop2/>}> </Route> */}
         <Route path="/shop/:id" element={<SingleProduct />}></Route>
-        {/* <Route element={<AdminPrivateRoute />}> */}
+        <Route path="/checkout" element={<CheckoutPage/>}></Route>
         <Route path="app" element={<MainContainer />}>
           <Route path='order' element={<OrderPage />}></Route>
           <Route path='add-product' element={<AddNewProduct />}></Route>

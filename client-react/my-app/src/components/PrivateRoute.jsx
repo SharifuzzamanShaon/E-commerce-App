@@ -4,34 +4,41 @@ import { useSelector } from 'react-redux'
 import { Navigate, Outlet, useNavigate } from 'react-router-dom'
 const PrivateRoute = () => {
     const { currentUser } = useSelector((state) => state.user)
-    const [isValidUser, setValidUser] = useState(true)
-
+    const [isValidUser, setValidUser] = useState(false)
+    const nav = useNavigate()
     useEffect(() => {
-        checkVaildToken()
-    }, [])
-    const config = {
-        headers: {
-            Authorization: `Bearer ${currentUser && currentUser.token}`
-        }
-    }
-    const checkVaildToken = async () => {
-        try {
-            const res = await axios.get("/profile", config)
-            console.log(res)
-            if (res.status === 200) {
-                setValidUser(true)
+        const checkVaildToken = async () => {
+            try {
+                if (isValidUser === false) {
+                    const config = {
+                        headers: {
+                            Authorization: `Bearer ${currentUser && currentUser.token}`
+                        }
+                    }
+                    let res = await axios.get("/profile", config)
+                    console.log(res);
+                    if (res.status === 200) {
+                        // setValidUser(true)
+                        nav('/')
+                    }
+                    else {
+                        setValidUser(false)
+                        nav('/sign-in')
+                    }
+                }
+                nav('/profile')
+            } catch (error) {
+                console.log(error);
             }
-            else {
-                setValidUser(false)
-            }
-        } catch (error) {
-            console.log(error);
         }
-    }
+        checkVaildToken();
+    }, [1])
+
+
     return (
         <>
             {
-                currentUser && isValidUser ? <Outlet /> : <Navigate to="/sign-in" />
+                currentUser  ? <Outlet /> : <Navigate to="/sign-in" />
             }
         </>
     )

@@ -1,7 +1,8 @@
 
 import React, { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux';
-import { handleCart } from '../redux/product/orderSlice';
+import { handleCart, removeOrder } from '../redux/product/orderSlice';
+import { Link } from 'react-router-dom';
 
 const CartPage = () => {
     const { isOpenCart, orders } = useSelector((state) => state.neworders)
@@ -12,8 +13,8 @@ const CartPage = () => {
         let total;
         total = orders.map((item) => item.price).reduce((acc, curr) => acc + curr, 0)
         setSubtotal(total)
-        let tax ;
-        tax = total/100 * 5
+        let tax;
+        tax = total / 100 * 5
         setTax(tax)
         console.log(subtotal)
     }, [orders])
@@ -23,7 +24,7 @@ const CartPage = () => {
         <>
             <div>
                 {isOpenCart && (
-                    <div className="w-full h-full bg-black bg-opacity-90 top-0 overflow-y-auto overflow-x-hidden fixed sticky-0" id="chec-div">
+                    <div className="w-full h-full bg-black bg-opacity-90 top-0 overflow-y-auto overflow-x-hidden  sticky-0" id="chec-div"> {/*fixed */}
                         <div className="w-full absolute z-50 right-0 h-full overflow-x-hidden transform translate-x-0 transition ease-in-out duration-700" id="checkout">
                             <div className="flex md:flex-row flex-col justify-end" id="cart">
                                 <div className="lg:w-1/2 w-full md:pl-10 pl-4 pr-10 md:pr-4 md:py-12 py-8 bg-white overflow-y-auto overflow-x-hidden h-screen" id="scroll">
@@ -36,7 +37,7 @@ const CartPage = () => {
                                     </div>
                                     <p className="text-5xl font-black leading-10 text-gray-600 pt-3">Your Cart</p>
                                     {
-                                        orders && orders.map((order) => {
+                                        orders.length >0 ? orders.map((order) => {
                                             return (
                                                 <div className="md:flex items-center mt-14 py-8 border-t border-gray-200">
                                                     <div className="w-1/4">
@@ -59,14 +60,14 @@ const CartPage = () => {
                                                         <div className="flex items-center justify-between pt-5 pr-6">
                                                             <div className="flex itemms-center">
                                                                 <p className="text-xs leading-3 underline text-gray-800 cursor-pointer">Add to favorites</p>
-                                                                <p className="text-xs leading-3 underline text-red-500 pl-5 cursor-pointer">Remove</p>
+                                                                <p onClick={()=>dispatch(removeOrder(order.orderId))} className="text-xs leading-3 underline text-red-500 pl-5 cursor-pointer" >Remove</p>
                                                             </div>
                                                             <p className="text-base font-black leading-none text-gray-800">{order.price}</p>
                                                         </div>
                                                     </div>
                                                 </div>
                                             )
-                                        })
+                                        }) : <h3 className="my-5">Your cart is empty</h3>
                                     }
 
 
@@ -93,9 +94,11 @@ const CartPage = () => {
                                                 <p className="text-2xl leading-normal text-gray-800">Total</p>
                                                 <p className="text-2xl font-bold leading-normal text-right text-gray-800">$10,240</p>
                                             </div>
-                                            <button onClick={() => dispatch(handleCart())} className="text-base leading-none w-full py-5 bg-gray-800 border-gray-800 border focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-800 text-white">
-                                                Checkout
-                                            </button>
+                                            <Link to="/checkout">
+                                                <button onClick={() => dispatch(handleCart())} className="text-base leading-none w-full py-5 bg-gray-800 border-gray-800 border focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-800 text-white">
+                                                    Checkout
+                                                </button>
+                                            </Link>
                                         </div>
                                     </div>
                                 </div>

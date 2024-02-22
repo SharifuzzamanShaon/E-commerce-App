@@ -14,6 +14,10 @@ const orderSlice = createSlice({
             }
             state.orders = [...state.orders, action.payload]
         },
+        removeOrder: (state, action) => {
+            const filteredOrder = state.orders.filter((item) => item.orderId != action.payload)
+            state.orders = [...filteredOrder]
+        },
         handleCart: (state) => {
             state.isOpenCart = !state.isOpenCart
         }
@@ -22,6 +26,6 @@ const orderSlice = createSlice({
 
 })
 
-export const { addOrder, handleCart } = orderSlice.actions
+export const { addOrder,removeOrder, handleCart } = orderSlice.actions
 
 export default orderSlice.reducer
