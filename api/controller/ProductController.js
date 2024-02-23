@@ -1,5 +1,6 @@
 const { Subcatagories } = require("../model/CategoryModel");
-const Product = require("../model/ProductModel")
+const Product = require("../model/ProductModel");
+const { uploadOnCloudinary } = require("../utils/FileUpload");
 
 const getSingleProduct = async (req, res) => {
     const id = req.params.id;
@@ -10,10 +11,14 @@ const addNewProduct = async (req, res, next) => {
     try {
 
         const { name, description, brand, category,
-            sizes, colors, price, totalQty, totalSold } = req.body
+            sizes, colors,images, price, totalQty, totalSold } = req.body
+
+        const filePath = `./uploads/${req.file.filename}`
+        const res = await uploadOnCloudinary(filePath);
+
         const newProduct = new Product({
             name, description, brand, category,
-            sizes, colors, price, totalQty, totalSold
+            sizes, colors,images: res.secure_url, price, totalQty, totalSold
         })
         const newProductInfo = await newProduct.save()
         // console.log(newProductInfo._id);
