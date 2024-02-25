@@ -26,6 +26,12 @@ const signIn = async (req, res, next) => {
         if (!user) throw error("user not found", 204)
         const passwordMatch = await bcrypt.compare(password, user.password);
         if (!passwordMatch) throw error("Password not match", 401)
+        const userInfo = {
+            _id: user._id,
+            username: user.username,
+            email: user.email,
+            avatar: user.avatar
+        }
         console.log(user);
         const payload = {
             id: user._id,
@@ -36,7 +42,7 @@ const signIn = async (req, res, next) => {
         console.log("payload", payload);
         const token = jwt.sign(payload, "privateKey", { expiresIn: "4h" });
 
-        return res.status(200).send({ message: "Signin success", success: true, userInfo: user, token })
+        return res.status(200).send({ message: "Signin success", success: true, userInfo: userInfo, token })
     } catch (err) {
         next(err)
     }

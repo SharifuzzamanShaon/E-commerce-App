@@ -10,11 +10,11 @@ const { Header, Content, Footer } = Layout;
 const SingleProduct = () => {
   const { id } = useParams()
   const { currentUser } = useSelector((state) => state.user)
-  const {orders} = useSelector((state)=>state.neworders)
+  const { orders } = useSelector((state) => state.neworders)
   const [messageApi, contextHolder] = message.useMessage();
   const dispatch = useDispatch()
   const [product, setProduct] = useState('')
-  const [newOrder, setNewOrder] = useState({productName:"", productId: "", productColor: "", productSize: "", quantity: 1, price: 0 })
+  const [newOrder, setNewOrder] = useState({ orderId: "", productName: "", productId: "", productColor: "", productSize: "", quantity: 1, price: 0 })
 
   useEffect(() => {
     const price = newOrder.quantity * parseInt(product.price);
@@ -22,7 +22,8 @@ const SingleProduct = () => {
   }, [newOrder.quantity])
 
   useEffect(() => {
-    setNewOrder({ ...newOrder, productName:product.name, productId: product._id, price: product.price })
+    
+    setNewOrder({ ...newOrder, productName: product.name, productId: product._id, price: parseInt(product.price) })
   }, [product.name, product._id, product.price])
   const getProductDetails = async () => {
     try {
@@ -57,14 +58,24 @@ const SingleProduct = () => {
       return warning('select size')
     }
     console.log(newOrder);
-    if(orders && orders.length>=5){
-     return warning("Can't buy more than 5 in a order")
+    if (orders && orders.length >= 5) {
+      return warning("Can't buy more than 5 in a order")
     }
-    const res = dispatch(addOrder(newOrder))
-    console.log(res);
+    function generateOrderId(length) {
+      return Math.random().toString(36).substr(2, length);
+    }
+    const orderId = generateOrderId(4)
+    const order ={...newOrder, orderId}
+    dispatch(addOrder(order));
+    success('Product added to cart')
   }
 
-
+  const success = (msg) => {
+    messageApi.open({
+      type: 'success',
+      content: `${msg}`,
+    });
+  };
   const warning = (msg) => {
     messageApi.open({
       type: 'warning',

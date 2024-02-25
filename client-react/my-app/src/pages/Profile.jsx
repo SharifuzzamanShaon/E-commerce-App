@@ -7,14 +7,12 @@ import axios from 'axios'
 import { userDeleteFailde, userDeleteStarted, userDeleteSuccess, userSignOut, userUpdateFaided, userUpdateSuccess } from '../redux/user/userSlice'
 const Profile = () => {
   const { currentUser, loading, error } = useSelector((state) => state.user)
-  const [passwordType, setPasswordType] = useState("password");
   const [file, setFile] = useState(undefined)
   const [filePerc, setFilePerc] = useState(0);
   const [fileUploadError, setFileUploadError] = useState(false);
   const [formData, setFormData] = useState({
     username: currentUser.userInfo.username,
     email: currentUser.userInfo.email,
-    password: currentUser.userInfo.password,
     avatar: currentUser.userInfo.avatar
   });
   const [updateSuccess, setUpdateSuccess] = useState(false);
@@ -95,15 +93,7 @@ const Profile = () => {
       }
     );
   }
-  const togglePassword = () => {
-    // if (passwordType === "password") {
-    //   setPasswordType("text")
-    //   return;
-    // }
-    // setPasswordType("password")
-    setPasswordType(passwordType === "password" ? "text" : "password");
-
-  }
+ 
   return (
     <div className='p-3 max-w-lg mx-auto'>
       <h1 className='text-3xl font-semibold text-center my-7'>Profile</h1>
@@ -152,17 +142,8 @@ const Profile = () => {
           className='border p-3 rounded-lg'
           onChange={handleChange}
         />
-        <input
-          type={passwordType}
-          placeholder='password'
-          value={formData.password}
-          onChange={handleChange}
-          id='password'
-          className='border p-3 rounded-lg'
-        />
-        <button className="btn btn-outline-primary" onClick={togglePassword}>
-          {passwordType === "password" ? "show" : "Hide"}
-        </button>
+       
+       
         <button onClick={handleSubmit}
           disabled={loading}
           className='bg-slate-700 text-white rounded-lg p-3 uppercase hover:opacity-95 disabled:opacity-80'
