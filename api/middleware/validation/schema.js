@@ -38,8 +38,12 @@ exports.schemas = {
                 Joi.string()
             )
             .required(),
+        images: Joi.array()
+            .items(
+                Joi.string()
+            ),
         brand: Joi.string(),
         totalQty: Joi.string(),
-       // totalSold: Joi.string()
+        // totalSold: Joi.string()
     })
 }
