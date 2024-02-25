@@ -1,31 +1,43 @@
-import { Button, Input, Select, Space, TreeSelect, message } from 'antd'
+import { Button, Input, Select, Space, TreeSelect, message, Upload } from 'antd'
 import TextArea from 'antd/es/input/TextArea'
 import axios from 'axios';
 import React, { useEffect, useState } from 'react'
+import { UploadOutlined } from '@ant-design/icons';
 import { useSelector } from 'react-redux';
-const productOption={ name: '', price: "", brand: "", totalQty: "", sizes: [], colors: ["black"], category: '', description: "" }
+const productOption = { name: '', price: "", brand: "", totalQty: "", sizes: [], colors: ["black"], images: null, category: '', description: "" }
 const AddNewProduct = () => {
     const [messageApi, contextHolder] = message.useMessage();
     const [treeData, setTreeData] = useState([])
-    const [newProduct, setNewProduct] = useState({...productOption});
+    const [newProduct, setNewProduct] = useState({ ...productOption });
     const { currentUser } = useSelector((state) => state.user)
 
     const handleChange = (e) => {
         setNewProduct({ ...newProduct, [e.target.name]: e.target.value })
     }
 
-    const options = [
+    const sizeOptions = [
         { label: "S", value: "S" },
         { label: "M", value: "M" },
         { label: "L", value: "L" },
         { label: "XL", value: "XL" },
         { label: "XXL", value: "XXL" }
     ];
+    const colorOptions = [
+        { label: "red", value: "red" },
+        { label: "green", value: "green" },
+        { label: "blue", value: "blue" },
+        { label: "blue", value: "pink" },
+        { label: "yellow", value: "yellow" },
+        { label: "gray", value: "gray" }
+    ]
     // const treeData = [...allCategories];
 
     const handleSelectSize = (value) => {
         setNewProduct({ ...newProduct, sizes: [...value] })
     };
+    const handleSelectColor = (value) => {
+        setNewProduct({ ...newProduct, colors: [...value] })
+    }
 
     const onChange = (newValue) => {
         setNewProduct({ ...newProduct, category: newValue })
@@ -34,22 +46,25 @@ const AddNewProduct = () => {
 
     const handleSubmit = async () => {
         try {
+            console.log(newProduct);
+            const formData = new FormData()
+            formData.append('images', newProduct.images)
             const config = {
                 headers: {
-                  "Content-type": "application/json",
+                    "Content-Type": "multipart/form-data"
                 }
-              };
+            };
             const res = await axios.post(`/products/add-product`, newProduct, config);
             console.log(res);
             if (res.status === 201) {
                 success();
-                setNewProduct({...productOption, sizes: []})
+                setNewProduct( ...productOption)
             } else {
-                showError(res.response.data.error[0])
+                showError(res.response.data.error)
             }
 
         } catch (error) {
-            showError(error.response.data.error[0])
+            showError(error.response.data.error)
             console.log(error)
         }
         console.log(newProduct);
@@ -91,6 +106,12 @@ const AddNewProduct = () => {
         }
     }
 
+    const handleFileChange = (event) => {
+        setNewProduct({...newProduct, images: event.target.files[0] });
+        console.log(event.target.files);
+    };
+        console.log(newProduct);
+
     return (
         <div className='p-3 max-w-lg mx-auto'>
             {contextHolder}
@@ -100,24 +121,27 @@ const AddNewProduct = () => {
                 <Input placeholder="Type here" type='number' name='price' prefix={"Price | "} value={newProduct.price} onChange={handleChange} />
                 <Input placeholder="Type here" type='text' name='brand' prefix={"Brand Name | "} value={newProduct.brand} onChange={handleChange} />
                 <Input placeholder="Type here" type='number' name='totalQty' prefix={"Totoal Quantity | "} value={newProduct.totalQty} onChange={handleChange} />
-                {/* <Space style={{ width: '100%', }} direction="vartical"> */}
-                    <Select mode="multiple" allowClear style={{ width: '100%' }} placeholder=" select Size" defaultValue={[]} onChange={handleSelectSize} options={options} />
-                    <TreeSelect
-                        showSearch
-                        style={{
-                            width: '100%',
-                        }}
-                        value={newProduct.category}
-                        dropdownStyle={{
-                            maxHeight: 400,
-                            overflow: 'auto',
-                        }}
-                        placeholder="Please select"
-                        allowClear
-                        treeDefaultExpandAll
-                        onChange={onChange}
-                        treeData={treeData.length > 0 ? treeData : []}
-                    />
+
+                <input type='file' onChange={handleFileChange} accept='image/*'></input>
+                <Button icon={<UploadOutlined />}> </Button>
+                <Select mode="multiple" allowClear style={{ width: '100%' }} placeholder=" select Size" defaultValue={[]} onChange={handleSelectSize} options={sizeOptions} />
+                <Select mode="multiple" allowClear style={{ width: '100%' }} placeholder=" select color" defaultValue={[]} onChange={handleSelectColor} options={colorOptions} />
+                <TreeSelect
+                    showSearch
+                    style={{
+                        width: '100%',
+                    }}
+                    value={newProduct.category}
+                    dropdownStyle={{
+                        maxHeight: 400,
+                        overflow: 'auto',
+                    }}
+                    placeholder="Please select"
+                    allowClear
+                    treeDefaultExpandAll
+                    onChange={onChange}
+                    treeData={treeData.length > 0 ? treeData : []}
+                />
                 {/* </Space> */}
 
                 <TextArea rows={4} placeholder="Type here" type='text' name='description' prefix={"Description | "} value={newProduct.description} onChange={handleChange} />
@@ -154,3 +178,10 @@ const AddNewProduct = () => {
 }
 
 export default AddNewProduct
+
+
+
+/**
+ * 
+ * njb
+ */
