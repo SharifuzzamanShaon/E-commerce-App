@@ -8,16 +8,16 @@ cloudinary.config({
     api_secret: 'CT9o3mEVvEQ0Dp1kbNNMFfg-BMI'
 });
 
-const uploadOnCloudinary = async (localFilePath) => {
+const uploadOnCloudinary = async (buffer) => {
     try {
-        if (!localFilePath) return null;
-        const response = await cloudinary.uploader.upload(localFilePath, {
-            resource_type: 'auto'
+        if (!buffer) return null;
+        const response = await cloudinary.uploader.upload(buffer, {
+            resource_type: 'image'
         })
         console.log("file uploaded to cloudinary", response.url);
         return response;
     } catch (error) {
-        fs.unlinkSync(localFilePath)
+        fs.unlinkSync(buffer)
         return null;
     }
 }

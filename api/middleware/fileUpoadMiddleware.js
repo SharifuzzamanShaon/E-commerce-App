@@ -4,7 +4,7 @@ const UPLOAD_FOLDER = "./uploads"
 const  path  = require('path')
 
 
-const storage = multer.diskStorage({
+const storage = multer.memoryStorage({
   destination: (req, file, cb) => {
     cb(null, UPLOAD_FOLDER)
   },
