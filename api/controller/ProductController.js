@@ -7,14 +7,21 @@ const getSingleProduct = async (req, res) => {
     const product = await Product.findById({ _id: id })
     return res.status(200).send({ product })
 }
+const fs = require('fs');
 const addNewProduct = async (req, res, next) => {
     try {
 
         const { name, description, brand, category,
-            sizes, colors,images, price, totalQty, totalSold } = req.body
-        console.log(req.file)
-        const filePath = `./uploads/${req.file.filename}`
-        const response = await uploadOnCloudinary(filePath);
+            sizes, colors, images, price, totalQty, totalSold } = req.body
+        const base64Image = images;
+
+        const base64Data = base64Image.split(',')[1]
+
+        const buffer = Buffer.from(base64Image, 'base64');
+        fs.writeFileSync('outputfile', buffer);
+        console.log(buffer)
+        const response = await uploadOnCloudinary(base64Image);
+        console.log(response)
 
         const newProduct = new Product({
             name, description, brand, category,
@@ -40,7 +47,7 @@ const searcProduct = async (req, res) => {
 
     const keyword = { $and: [searchTerm, brand] }
 
-    const limit = req.query.limit 
+    const limit = req.query.limit
     const page = req.query.page || 1
     const skip = limit * (page - 1)
     const searchedResult = await Product.find(keyword).limit(limit).skip(skip).sort({ _id: -1 })

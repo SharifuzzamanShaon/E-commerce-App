@@ -1,8 +1,24 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux';
 
 const CheckoutPage = () => {
   const { orders } = useSelector((state) => state.neworders)
+  const { currentUser } = useSelector((state) => state.user)
+  const [shipping, setShipping] = useState(false)
+  const [shippingDetails, setShippingDetails] = useState({ fullname: "", email: "", address: "", city: "", state: "", zipcode: "" })
+  console.log(currentUser);
+  useEffect(() => {
+    setShippingDetails({ ...shippingDetails, email: currentUser.userInfo.email })
+  }, [currentUser.userInfo])
+  const handleShippingInfo = (e) => {
+    setShippingDetails({ ...shippingDetails, [e.target.name]: e.target.value })
+  }
+
+  useEffect(() => {
+    const isShippingDetailsComplete = Object.values(shippingDetails).every(value => value);
+    setShipping(isShippingDetailsComplete)
+  }, [shippingDetails.fullname, shippingDetails.email, shippingDetails.address, shippingDetails.city, shippingDetails.state, shippingDetails.zipcode])
+
   return (
     <>
       <div class="flex flex-col items-center border-b bg-white py-4 sm:flex-row sm:px-10 lg:px-20 xl:px-32">
@@ -11,17 +27,22 @@ const CheckoutPage = () => {
           <div class="relative">
             <ul class="relative flex w-full items-center justify-between space-x-2 sm:space-x-4">
               <li class="flex items-center space-x-3 text-left sm:space-x-4">
-                <a class="flex h-6 w-6 items-center justify-center rounded-full bg-emerald-200 text-xs font-semibold text-emerald-700" href="#"
-                ><svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" /></svg
-                  ></a>
+                <a class="flex h-6 w-6 items-center justify-center rounded-full bg-emerald-200 text-xs font-semibold text-emerald-700" href="#">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" /></svg></a>
                 <span class="font-semibold text-gray-900">Shop</span>
               </li>
               <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" />
               </svg>
               <li class="flex items-center space-x-3 text-left sm:space-x-4">
-                <a class="flex h-6 w-6 items-center justify-center rounded-full bg-gray-600 text-xs font-semibold text-white ring ring-gray-600 ring-offset-2" href="#">2</a>
+
+                {
+                  shipping ? <a class="flex h-6 w-6 items-center justify-center rounded-full bg-emerald-200 text-xs font-semibold text-emerald-700" href="#">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                      <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" /></svg></a> :
+                    <a class="flex h-6 w-6 items-center justify-center rounded-full bg-gray-600 text-xs font-semibold text-white ring ring-gray-600 ring-offset-2" href="#">2</a>
+                }
                 <span class="font-semibold text-gray-900">Shipping</span>
               </li>
               <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
@@ -54,6 +75,50 @@ const CheckoutPage = () => {
                 )
               })
             }
+          </div>
+          {/* shipping address form */}
+          <div class="max-w-md my-5 mx-auto bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4">
+            <div class="mb-4">
+              <label class="block text-gray-700 text-sm font-bold mb-2" for="fullname">
+                Full Name
+              </label>
+              <input onChange={handleShippingInfo} name='fullname' value={shippingDetails.fullname} type='text' class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" id="fullname" placeholder="Full Name" />
+            </div>
+            <div class="mb-4">
+              <label class="block text-gray-700 text-sm font-bold mb-2" for="fullname">
+                Email
+              </label>
+              <input onChange={handleShippingInfo} name='email' value={shippingDetails.email} type='email' class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" id="fullname" placeholder="Full Name" />
+            </div>
+            <div class="mb-4">
+              <label onChange={handleShippingInfo} class="block text-gray-700 text-sm font-bold mb-2" for="address">
+                Address
+              </label>
+              <input onChange={handleShippingInfo} name='address' value={shippingDetails.address} class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" id="address" type="text" placeholder="Address" />
+            </div>
+            <div class="mb-4">
+              <label class="block text-gray-700 text-sm font-bold mb-2" for="city">
+                City
+              </label>
+              <input onChange={handleShippingInfo} name='city' value={shippingDetails.city} class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" id="city" type="text" placeholder="City" />
+            </div>
+            <div class="mb-4">
+              <label class="block text-gray-700 text-sm font-bold mb-2" for="state">
+                State
+              </label>
+              <input onChange={handleShippingInfo} name='state' value={shippingDetails.state} class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" id="state" type="text" placeholder="State" />
+            </div>
+            <div class="mb-4">
+              <label class="block text-gray-700 text-sm font-bold mb-2" for="zipcode">
+                Zip Code
+              </label>
+              <input  onChange={handleShippingInfo} name='zipcode' value={shippingDetails.zipcode} class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" id="zipcode" type="text" placeholder="Zip Code" />
+            </div>
+            <div class="flex items-center justify-between">
+              <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline" type="button">
+                Save
+              </button>
+            </div>
           </div>
 
           <p class="mt-8 text-lg font-medium">Shipping Methods</p>

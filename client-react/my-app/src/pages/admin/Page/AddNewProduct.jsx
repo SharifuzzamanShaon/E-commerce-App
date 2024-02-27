@@ -47,24 +47,22 @@ const AddNewProduct = () => {
     const handleSubmit = async () => {
         try {
             console.log(newProduct);
-            const formData = new FormData()
-            formData.append('images', newProduct.images)
             const config = {
                 headers: {
-                    "Content-Type": "multipart/form-data"
+                    "Content-Type": "application/json"
                 }
             };
             const res = await axios.post(`/products/add-product`, newProduct, config);
             console.log(res);
             if (res.status === 201) {
                 success();
-                setNewProduct( ...productOption)
+                setNewProduct(...productOption)
             } else {
                 showError(res.response.data.error)
             }
 
         } catch (error) {
-            showError(error.response.data.error)
+            // showError(error.response.data.error)
             console.log(error)
         }
         console.log(newProduct);
@@ -105,12 +103,27 @@ const AddNewProduct = () => {
             console.log(error)
         }
     }
-
+    const [selectedImage, setSelectedImage] = useState(null);
     const handleFileChange = (event) => {
-        setNewProduct({...newProduct, images: event.target.files[0] });
-        console.log(event.target.files);
+        const file = event.target.files[0];
+        console.log(file);
+
+        if (file) {
+            const reader = new FileReader();
+
+            reader.onload = () => {
+                setSelectedImage(reader.result);
+                console.log(reader.result);
+                setNewProduct({ ...newProduct, images: reader.result })
+            };
+
+            reader.readAsDataURL(file);
+        }
     };
-        console.log(newProduct);
+    const handleRemoveImage = () => {
+        setSelectedImage(null);
+    };
+    console.log(newProduct);
 
     return (
         <div className='p-3 max-w-lg mx-auto'>
@@ -123,7 +136,13 @@ const AddNewProduct = () => {
                 <Input placeholder="Type here" type='number' name='totalQty' prefix={"Totoal Quantity | "} value={newProduct.totalQty} onChange={handleChange} />
 
                 <input type='file' onChange={handleFileChange} accept='image/*'></input>
-                <Button icon={<UploadOutlined />}> </Button>
+                {selectedImage && (
+                    <div>
+                        <h3>Preview:</h3>
+                        <img src={selectedImage} alt="Selected" style={{ maxWidth: '100%', maxHeight: '200px' }} />
+                        <button onClick={handleRemoveImage}>Remove Image</button>
+                    </div>
+                )}
                 <Select mode="multiple" allowClear style={{ width: '100%' }} placeholder=" select Size" defaultValue={[]} onChange={handleSelectSize} options={sizeOptions} />
                 <Select mode="multiple" allowClear style={{ width: '100%' }} placeholder=" select color" defaultValue={[]} onChange={handleSelectColor} options={colorOptions} />
                 <TreeSelect
