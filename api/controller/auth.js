@@ -1,6 +1,6 @@
 const User = require("../model/User")
 const bcrypt = require('bcrypt');
-const error = require("../utils/error")
+const {error} = require("../utils/error")
 const jwt = require("jsonwebtoken");
 const saltRounds = 10;
 
@@ -30,7 +30,8 @@ const signIn = async (req, res, next) => {
             _id: user._id,
             username: user.username,
             email: user.email,
-            avatar: user.avatar
+            avatar: user.avatar,
+            role: user.role
         }
         console.log(user);
         const payload = {

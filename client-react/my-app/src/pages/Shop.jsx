@@ -137,7 +137,7 @@ function App() {
                                                 </Card>)
                                             })
 
-                                            : <Spin />
+                                            : "Product not found"
                                     }
                                 </div>
                             </div>

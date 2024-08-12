@@ -1,15 +1,13 @@
 import React, { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios'
-import Alert from '@mui/material/Alert';
-import Stack from '@mui/material/Stack';
-import { Snackbar } from '@mui/material';
 import OAuth from '../components/OAuth';
 import { useDispatch, useSelector } from 'react-redux';
 import { signInFailure, signInStart, signInSuccess } from '../redux/user/userSlice';
 const Signup = () => {
   const [formData, setFormData] = useState({ username: "", email: "", password: "" });
-  const {currentUser, error, loading} = useSelector((state)=>state.user)
+  const {currentUser, error, loading} = useSelector((state)=>state.user);
+  const {signInPorcess, setSignProcess} = useState(false);
   const navigate = useNavigate();
   const dispatch = useDispatch()
   const handleChange = (e) => {
@@ -42,9 +40,11 @@ const Signup = () => {
         console.log("koj");
         dispatch(signInSuccess(res.data))
         navigate("/sign-in")
+        setSignProcess(true)
       }
     } catch (error) {
-      dispatch(signInFailure(error.response.data.message))
+      console.log(error);
+      dispatch(signInFailure(error.response.data.error[0]))
     }
   }
 
@@ -79,7 +79,7 @@ const Signup = () => {
           disabled={loading}
           className='bg-slate-700 text-white p-3 rounded-lg uppercase hover:opacity-95 disabled:opacity-80'
         >
-          {loading ? 'Loading...' : 'Sign Up'}
+          {loading && signInPorcess ? 'Loading...' : 'Sign Up'}
         </button>
         <OAuth />
       </form>
