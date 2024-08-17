@@ -1,9 +1,12 @@
 const User = require("../model/User")
 const bcrypt = require('bcrypt');
-const {error} = require("../utils/error")
+const { error } = require("../utils/error")
 const jwt = require("jsonwebtoken");
 const saltRounds = 10;
-
+const sendEmail = require("../utils/sendEmail")
+const ejs = require('ejs');
+const path = require('path');
+require("dotenv").config()
 const signUp = async (req, res, next) => {
     const { username, email, password } = req.body
     try {
@@ -48,7 +51,6 @@ const signIn = async (req, res, next) => {
         next(err)
     }
 }
-
 const googleAuth = async (req, res, next) => {
     const { name, email, photoURL } = req.body
     try {
@@ -81,8 +83,71 @@ const googleAuth = async (req, res, next) => {
     }
 }
 
+const foregtPassword = async (req, res, next) => {
+    try {
+        const { email } = req.body;
+        let userExist = await User.findOne({ 'email': email })
+        if (!userExist) throw error("user not found", 204)
+        const payload = {
+            username: userExist.username,
+            email: userExist.email
+        }
+        const token = jwt.sign(payload, "privateKey", { expiresIn: "1h" });
+        const url = `${process.env.CLIENT_URL}/reset-password?email=${payload.email}&token=${token}`;
+        const data = {
+            name: `${userExist.username}`,
+            url: url,
+        }
+        await User.findOneAndUpdate({ email: email }, { resetPasswordToken: token, resetPasswordExpires: Date.now() + 10 * 60 * 1000 })
+        const filePath = path.join(__dirname, '../views/mail/welcome.ejs');
+        await ejs.renderFile(filePath, data, (err, str) => {
+            if (err) {
+                console.error('Error rendering EJS file:', err);
+                return res.status(500).send('Error rendering template');
+            }
+            return res.send(str)
+            // sendEmail(`${userExist.email}`, "Testing mail", str)
+        })
+
+        // return res.status(200).send('sent mail for reset new password')
+
+    } catch (error) {
+        next(error);
+
+    }
+}
+const resetPassword = async (req, res, next) => {
+    try {
+        let queryString = req.url.split('?')[1];
+
+        // Replace any occurrence of &amp; with &
+        if (queryString) {
+            queryString = queryString.replace(/&amp;/g, '&');
+
+            // Re-parse the query string after sanitization
+            const url = new URL(`http://localhost:5000?${queryString}`);
+            const email = url.searchParams.get('email');
+            const token = url.searchParams.get('token');
+            // console.log(email, token);
+            if (!email || !token) throw error("invalid credentials", 401)
+            const validUser = await User.findOne({ email: email })
+            if (!validUser) throw error("user not found", 204)
+            const validTimeToReset = new Date() < new Date(validUser.resetPasswordExpires)
+            if (!validTimeToReset) throw error("token expired, try again", 401)
+            const { newPassword } = req.body
+            console.log(newPassword);
+            const hash = await bcrypt.hash(newPassword, saltRounds);
+            await User.findOneAndUpdate({ email: validUser.email }, { password: hash })
+            return res.status(200).send({ messgae: "passward reset success" })
+        }
+    } catch (error) {
+        next(error)
+    }
+}
 module.exports = {
     signUp,
     signIn,
-    googleAuth
+    googleAuth,
+    foregtPassword,
+    resetPassword
 }

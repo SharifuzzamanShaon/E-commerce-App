@@ -4,6 +4,8 @@ const useRouter = require("./router/user");
 const { connectDB } = require("./DB/ConnectDB");
 const router = require("./router");
 const cors = require('cors');
+const path = require('path');
+const express = require('express');
 const authMiddleware = require("./middleware/authenticate/authMiddleware");
 app.use(cors())
 
@@ -24,9 +26,24 @@ app.post("/token",authMiddleware, (req, res)=>{
     console.log("user is", req.user);
 })
 
+app.set("view engine", "ejs");
+app.use(express.static(path.join(__dirname, "views")))
+
+app.use(express.static(path.join(__dirname, 'public')));
+
+app.get("/show", (req, res)=>{
+    const data = {
+        name: "Json Roy"
+    }
+    res.render("mail/welcome", data)
+})
+
 app.use("/api", useRouter)
 
 app.use("/api/v1", router)
+
+
+
 
 app.use((err, req, res, next) => {
     const statusCode = err.statusCode || 500;
