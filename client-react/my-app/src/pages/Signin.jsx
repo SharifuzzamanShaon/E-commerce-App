@@ -8,6 +8,7 @@ import { signInStart, signInSuccess, signInFailure } from '../redux/user/userSli
 const Signin = () => {
 
   const [formData, setFormData] = useState({})
+  const {signInPorcess, setSignProcess} = useState(false);
   const navigate = useNavigate()
   const { currentUser, error, loading } = useSelector((state) => state.user)
   const dispatch = useDispatch()
@@ -33,7 +34,7 @@ const Signin = () => {
       console.log(res);
       if (res.status === 200) {
         dispatch(signInSuccess(res.data));
-        console.log(res.data);
+        setSignProcess(true)
         res.data.userInfo.role === 'admin' ? navigate("/admin-dashboard") : navigate("/profile");
       }
     } catch (error) {
@@ -42,7 +43,7 @@ const Signin = () => {
   }
 
   return (
-    <div className='p-3 max-w-lg mx-auto'>
+    <div className='max-w-md mx-auto mt-10 p-6 bg-white shadow-md rounded-md'>
       <h1 className='text-3xl text-center font-semibold my-7'>Sign In</h1>
       <form onSubmit={handleSubmit} className='flex flex-col gap-4'>
         <input
@@ -64,7 +65,7 @@ const Signin = () => {
           disabled={loading}
           className='bg-slate-700 text-white p-3 rounded-lg uppercase hover:opacity-95 disabled:opacity-80'
         >
-          {loading ? 'Loading...' : 'Sign In'}
+          {loading ?  'Loading...' : 'Sign In'}
         </button>
         <OAuth />
       </form>
@@ -74,6 +75,9 @@ const Signin = () => {
         <Link to={'/sign-up'}>
           <span className='text-blue-700'>Sign up</span>
         </Link>
+        <p className='text-right'>
+          <Link to={'/forget-password'}><span>Forget Password</span></Link>
+        </p>
       </div>
       {error && <p className='text-red-500 mt-5'>{error}</p>}
     </div>

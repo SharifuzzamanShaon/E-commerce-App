@@ -105,11 +105,10 @@ const foregtPassword = async (req, res, next) => {
                 console.error('Error rendering EJS file:', err);
                 return res.status(500).send('Error rendering template');
             }
-            return res.send(str)
-            // sendEmail(`${userExist.email}`, "Testing mail", str)
+            // return res.send(str)
+            sendEmail(`${userExist.email}`, "Testing mail", str)
         })
-
-        // return res.status(200).send('sent mail for reset new password')
+        return res.status(200).send({ message: 'sent mail for reset new password' })
 
     } catch (error) {
         next(error);
@@ -134,11 +133,13 @@ const resetPassword = async (req, res, next) => {
             if (!validUser) throw error("user not found", 204)
             const validTimeToReset = new Date() < new Date(validUser.resetPasswordExpires)
             if (!validTimeToReset) throw error("token expired, try again", 401)
-            const { newPassword } = req.body
-            console.log(newPassword);
-            const hash = await bcrypt.hash(newPassword, saltRounds);
-            await User.findOneAndUpdate({ email: validUser.email }, { password: hash })
-            return res.status(200).send({ messgae: "passward reset success" })
+            // if (req.body.newPassword) {
+                const { newPassword } = req.body
+                console.log(newPassword);
+                const hash = await bcrypt.hash(newPassword, saltRounds);
+                await User.findOneAndUpdate({ email: validUser.email }, { password: hash })
+                return res.status(200).send({ messgae: "passward reset success" })
+            // }
         }
     } catch (error) {
         next(error)

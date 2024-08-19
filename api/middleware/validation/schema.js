@@ -45,5 +45,11 @@ exports.schemas = {
         brand: Joi.string(),
         totalQty: Joi.string(),
         // totalSold: Joi.string()
+    }),
+    resetPassword: Joi.object({
+        newPassword: Joi.string()
+            .min(6)
+            .max(8)
+            .required()
     })
 }

@@ -8,5 +8,5 @@ router.post("/signup", runValidation(schemas.signup), signUp)
 router.post("/signin", signIn)
 router.post("/google", googleAuth)
 router.post("/forget-password", foregtPassword)
-router.get("/reset-password", resetPassword)
+router.post("/reset-password", runValidation(schemas.resetPassword), resetPassword)
 module.exports = router

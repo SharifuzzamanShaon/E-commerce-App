@@ -21,6 +21,8 @@ import SingleProduct from './pages/SingleProduct'
 import Shop2 from './pages/Shop2'
 import CartPage from './pages/CartPage'
 import CheckoutPage from './pages/CheckoutPage'
+import ForgetPassword from './pages/ForgetPassword'
+import ResetPassword from './components/ResetPassword'
 const App = () => {
 
   return (
@@ -30,6 +32,8 @@ const App = () => {
         <Route path="/" element={<Home />}>Home</Route>
         <Route path="/sign-in" element={<Signin />}> SignIn</Route>
         <Route path="/sign-up" element={<Signup />}> SignUp</Route>
+        <Route path="/forget-password" element={<ForgetPassword/>}></Route>
+        <Route path="/reset-password" element={<ResetPassword/>}></Route>
         <Route path="/about" element={<About />}>About</Route>
         <Route path="/search" element={<Search />}> </Route>
         <Route path="/shop" element={<Shop />}> </Route>
