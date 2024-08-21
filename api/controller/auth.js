@@ -12,14 +12,59 @@ const signUp = async (req, res, next) => {
     try {
         const isExists = await User.findOne({ "email": email });
         if (isExists) {
-            return res.status(409).send({ message: "user already exists" })
+            return res.status(409).send({ message: "user already exists" });
         }
         const hash = await bcrypt.hash(password, saltRounds);
-        const newUser = new User({ username, email, password: hash })
+        const newUser = new User({ username, email, password: hash });
         const userInfo = await newUser.save();
         return res.status(201).send({ messgae: "Signup successfully", success: true, userInfo });
     } catch (err) {
-        res.status(500).send({ message: "server error" })
+        res.status(500).send({ message: "server error" });
+    }
+}
+const verifyAccount = async (req, res, next) => {
+    try {
+        const { email } = req.body
+        if (!email) throw error("invalid credentials", 401)
+        const userExist = await User.findOne({ email: email });
+        if (userExist.isVerified === true) return res.status(200).send({ message: 'alread verified' });
+        console.log(userExist);
+        const payload = {
+            email: email
+        }
+        const token = jwt.sign(payload, "privateKeyVerifyAcc", { expiresIn: "1h" });
+        const url = `${process.env.CLIENT_URL}/confirm-verification?email=${userExist.email}&token=${token}`;
+
+        await User.findOneAndUpdate({ email: email }, { verificationToken: token });
+        const data = {
+            name: `${userExist.username}`,
+            url: url,
+        }
+        const filePath = path.join(__dirname, '../views/mail/verifyEmail.ejs');
+        await ejs.renderFile(filePath, data, (err, str) => {
+            if (err) {
+                return res.status(500).send('Error rendering template');
+            }
+            sendEmail(`${userExist.email}`, "Verify your Email", str)
+        })
+        return res.status(200).send({ message: 'mail has sent to verify account' })
+    } catch (error) {
+        next(error)
+    }
+}
+const confirmVerification = async (req, res, next) => {
+    try {
+        const email = req.query.email
+        const token = req.query.token
+        if (!email || !token) throw error("invalid credentials", 401)
+        const validUser = await User.findOne({ email: email })
+        if (!validUser) throw error("user not found", 204)
+        if (validUser.verificationToken != token) throw error("invalid token, try again", 401)
+        await User.findOneAndUpdate({ email: validUser.email }, { isVerified: true })
+        return res.status(200).send({ messgae: "Account verification success" })
+
+    } catch (error) {
+        next(error)
     }
 }
 const signIn = async (req, res, next) => {
@@ -92,17 +137,16 @@ const foregtPassword = async (req, res, next) => {
             username: userExist.username,
             email: userExist.email
         }
-        const token = jwt.sign(payload, "privateKey", { expiresIn: "1h" });
+        const token = jwt.sign(payload, "privateKeyResetPass", { expiresIn: "1h" });
         const url = `${process.env.CLIENT_URL}/reset-password?email=${payload.email}&token=${token}`;
         const data = {
             name: `${userExist.username}`,
             url: url,
         }
         await User.findOneAndUpdate({ email: email }, { resetPasswordToken: token, resetPasswordExpires: Date.now() + 10 * 60 * 1000 })
-        const filePath = path.join(__dirname, '../views/mail/welcome.ejs');
+        const filePath = path.join(__dirname, '../views/mail/resetPassword.ejs');
         await ejs.renderFile(filePath, data, (err, str) => {
             if (err) {
-                console.error('Error rendering EJS file:', err);
                 return res.status(500).send('Error rendering template');
             }
             // return res.send(str)
@@ -121,25 +165,21 @@ const resetPassword = async (req, res, next) => {
 
         // Replace any occurrence of &amp; with &
         if (queryString) {
-            queryString = queryString.replace(/&amp;/g, '&');
+            const email = req.query.email
+            const token = req.query.token
+            console.log(email, token);
 
-            // Re-parse the query string after sanitization
-            const url = new URL(`http://localhost:5000?${queryString}`);
-            const email = url.searchParams.get('email');
-            const token = url.searchParams.get('token');
-            // console.log(email, token);
             if (!email || !token) throw error("invalid credentials", 401)
             const validUser = await User.findOne({ email: email })
             if (!validUser) throw error("user not found", 204)
             const validTimeToReset = new Date() < new Date(validUser.resetPasswordExpires)
             if (!validTimeToReset) throw error("token expired, try again", 401)
-            // if (req.body.newPassword) {
-                const { newPassword } = req.body
-                console.log(newPassword);
-                const hash = await bcrypt.hash(newPassword, saltRounds);
-                await User.findOneAndUpdate({ email: validUser.email }, { password: hash })
-                return res.status(200).send({ messgae: "passward reset success" })
-            // }
+            if (validUser.resetPasswordToken != token) throw error("invalid token, try again", 401)
+            const { newPassword } = req.body
+            console.log(newPassword);
+            const hash = await bcrypt.hash(newPassword, saltRounds);
+            await User.findOneAndUpdate({ email: validUser.email }, { password: hash })
+            return res.status(200).send({ messgae: "passward reset success" })
         }
     } catch (error) {
         next(error)
@@ -148,6 +188,8 @@ const resetPassword = async (req, res, next) => {
 module.exports = {
     signUp,
     signIn,
+    verifyAccount,
+    confirmVerification,
     googleAuth,
     foregtPassword,
     resetPassword
